@@ -65,7 +65,13 @@ async function connectDB() {
     }
   }
 
-  // Fallback to in-memory embedded MongoDB
+  // If on Vercel and no MONGODB_URI is provided, skip MongoMemoryServer and use in-memory engine
+  if (process.env.VERCEL) {
+    console.log('Running in Vercel serverless mode without external MONGODB_URI. Automatic in-memory JSON engine active.');
+    return;
+  }
+
+  // Fallback to in-memory embedded MongoDB (for local development)
   try {
     console.log('Starting embedded in-memory MongoDB server...');
     mongod = await MongoMemoryServer.create();
@@ -74,8 +80,7 @@ async function connectDB() {
     console.log(`MongoDB Connected successfully to embedded instance at: ${memUri}`);
     await seedInitialData();
   } catch (err) {
-    console.error('Fatal error starting MongoDB:', err);
-    process.exit(1);
+    console.warn('Could not start embedded MongoDB, will use in-memory JSON engine:', err.message);
   }
 }
 

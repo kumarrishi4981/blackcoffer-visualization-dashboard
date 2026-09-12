@@ -1,4 +1,6 @@
+const mongoose = require('mongoose');
 const Insight = require('../models/Insight');
+const memoryFallback = require('./memoryFallback');
 
 /**
  * Builds MongoDB query object based on query parameters.
@@ -81,6 +83,9 @@ function buildFilterQuery(queryParams) {
 
 // GET /api/data - Paginated and filtered insights list
 exports.getInsights = async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return memoryFallback.getInsights(req, res);
+  }
   try {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.max(1, Math.min(100, parseInt(req.query.limit, 10) || 20));
@@ -116,6 +121,9 @@ exports.getInsights = async (req, res) => {
 
 // GET /api/filters/options - Returns distinct values for dropdown selectors
 exports.getFilterOptions = async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return memoryFallback.getFilterOptions(req, res);
+  }
   try {
     const [end_years, topics, sectors, regions, pestles, sources, countries, cities] = await Promise.all([
       Insight.distinct('end_year', { end_year: { $nin: ['', null] } }),
@@ -152,6 +160,9 @@ exports.getFilterOptions = async (req, res) => {
 
 // GET /api/analytics/kpis - Key summary metrics for filtered dataset
 exports.getKpis = async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return memoryFallback.getKpis(req, res);
+  }
   try {
     const filter = buildFilterQuery(req.query);
 
@@ -207,6 +218,9 @@ exports.getKpis = async (req, res) => {
 
 // GET /api/analytics/charts - Aggregated chart datasets
 exports.getChartsData = async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return memoryFallback.getChartsData(req, res);
+  }
   try {
     const filter = buildFilterQuery(req.query);
 
