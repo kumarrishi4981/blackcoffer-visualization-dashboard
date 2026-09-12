@@ -1,0 +1,11 @@
+{
+  "name": "blackcoffer-visualization-dashboard",
+  "version": "1.0.0",
+  "description": "Full-stack Data Visualization Dashboard for Blackcoffer assignment built with MERN stack (MongoDB, Express, React, Node.js)",
+  "scripts": {
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev",
+    "seed": "cd backend && npm run seed",
+    "build": "cd frontend && npm run build"
+  }
+}
